@@ -17,9 +17,12 @@ public class User implements Serializable {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Column(name = "first_name", nullable = false, length = 25)
+    @Column(name = "first_name", nullable = false)
     private String firstname;
 
-    @Column(name = "last_name", nullable = false, length = 25)
+    @Column(name = "last_name", nullable = false)
     private String lastname;
+
+    @Column(name = "password", nullable = false)
+    private String password;
 }

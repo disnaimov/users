@@ -1,8 +1,11 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dto.UserInfo;
 import com.example.demo.entities.User;
-import com.example.demo.repositories.UserRepository;
+import com.example.demo.service.UserService;
 import jakarta.persistence.EntityExistsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,44 +15,42 @@ import java.util.UUID;
 @RequestMapping("/users")
 @RestController
 public class UserRestController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public UserRestController(UserRepository userRepository){
-        this.userRepository = userRepository;
+    public UserRestController(UserService userService){
+        this.userService = userService;
     }
 
-    @GetMapping
-    public List<User> getAll(){
-        return userRepository.findAll();
+    //private static final Logger LOGGER = LoggerFactory.getLogger(UserRestController.class);
+    @RequestMapping(method = RequestMethod.POST)
+    public UserInfo create(@RequestBody UserInfo user){
+        return userService.create(user);
     }
 
-    @GetMapping("/{id}")
-    public User getById(@PathVariable("id") UUID id){
-       return userRepository.findById(id).get();
+    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
+    public UserInfo update(@RequestBody UserInfo user){
+        return userService.update(user);
     }
 
-    @PutMapping
-    public User update(@RequestBody User user){
-        if (userRepository.existsById(user.getId())){
-            return userRepository.save(user);
-        }
-        throw new EntityExistsException("User with id:" + user.getId() + " doesn't not exist");
+
+    @RequestMapping(method = RequestMethod.GET)
+    public List<UserInfo> getAll(){
+        return userService.getAll();
     }
 
-    @PostMapping
-    public User create(@RequestBody User user){
-        UUID id = user.getId();
-        if (id != null){
-            if (userRepository.existsById(user.getId())){
-                throw new EntityExistsException("User already exist");
-            }
-        }
-        return userRepository.save(user);
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public UserInfo getById(@PathVariable ("id") UUID id){
+        return userService.getById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") UUID id){
-        userRepository.deleteById(id);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public void removeById(@PathVariable("id") UUID id){
+        userService.removeById(id);
     }
+
+
+
+
+
 }
