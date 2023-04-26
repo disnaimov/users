@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN password varchar(50) not null
