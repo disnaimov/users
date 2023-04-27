@@ -1,7 +1,9 @@
-/*package com.example.demo.controllers;
+package com.example.demo.controllers;
 
+import com.example.demo.dto.MessageDto;
 import com.example.demo.entities.Message;
 import com.example.demo.dao.MessageRepository;
+import com.example.demo.service.MessageService;
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,47 +15,35 @@ import java.util.UUID;
 @RestController
 public class MessageRestController {
 
-    private final MessageRepository messageRepository;
+    private final MessageService messageService;
 
     @Autowired
-    public MessageRestController(MessageRepository messageRepository){
-        this.messageRepository = messageRepository;
+    public MessageRestController(MessageService messageService){
+        this.messageService = messageService;
     }
 
-    @GetMapping
-    public List<Message> getAll(){
-        return messageRepository.findAll();
+    @RequestMapping(method = RequestMethod.POST)
+    public MessageDto create(@RequestBody MessageDto message){
+        return messageService.create(message);
     }
 
-    @GetMapping("/{id}")
-    public Message getById(@PathVariable("id") UUID id){
-        return messageRepository.findById(id).get();
+    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
+    public MessageDto update(@RequestBody MessageDto message){
+        return messageService.update(message);
     }
 
-    @PutMapping
-    public Message update(@RequestBody Message message){
-        if (messageRepository.existsById(message.getId())){
-            return messageRepository.save(message);
-        }
-        throw new EntityExistsException("Message with id:" + message.getId() + " doesn't not exist");
+    @RequestMapping(method = RequestMethod.GET)
+    public List<MessageDto> getAll(){
+        return messageService.getAll();
     }
 
-    @PostMapping
-    public Message create(@RequestBody Message message){
-        UUID id = message.getId();
-        if (id != null){
-            if (messageRepository.existsById(message.getId())){
-                throw new EntityExistsException("Message already exist");
-            }
-        }
-        return messageRepository.save(message);
+    @RequestMapping(value = "/{id}",method = RequestMethod.GET)
+    public MessageDto getById(@PathVariable("id") UUID id){
+        return messageService.getById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") UUID id){
-        messageRepository.deleteById(id);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public void removeById(@PathVariable("id") UUID id){
+        messageService.removeById(id);
     }
-
-
-
-}*/
+}

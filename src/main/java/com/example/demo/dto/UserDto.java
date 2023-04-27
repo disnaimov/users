@@ -10,7 +10,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfo implements Serializable {
+public class UserDto implements Serializable {
     private UUID id;
     private String firstname;
     private String lastname;
