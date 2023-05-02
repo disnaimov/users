@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 //import com.example.demo.config.MessageDtoConverter;
 import com.example.demo.config.MapperUtil;
+import com.example.demo.config.MessageMapper;
 import com.example.demo.dao.MessageRepository;
 import com.example.demo.dao.UserRepository;
 import com.example.demo.dto.MessageDto;
@@ -31,11 +32,14 @@ public class MessageService {
     private final UserRepository userRepository;
     private final MapperUtil modelMapper;
 
+    private final MessageMapper mapper;
+
     @Autowired
-    public MessageService(MessageRepository messageRepository, UserRepository userRepository, MapperUtil modelMapper){
+    public MessageService(MessageRepository messageRepository, UserRepository userRepository, MapperUtil modelMapper,MessageMapper mapper){
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.mapper = mapper;
     }
 
 
@@ -77,11 +81,11 @@ public class MessageService {
         message.setStatus(messageDto.getStatus());
 
         message = messageRepository.save(message);
-        MessageDto saved = modelMapper.messageToDto(message);
+        MessageDto saved = mapper.messageToDto(message);
 
         log.info("Message saved");
         log.debug("Message saved {}", saved.toString());
-        return saved;
+            return saved;
     }
 
 
