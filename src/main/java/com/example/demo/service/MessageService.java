@@ -1,12 +1,21 @@
 package com.example.demo.service;
 
+//import com.example.demo.config.MessageDtoConverter;
+import com.example.demo.config.MapperUtil;
 import com.example.demo.dao.MessageRepository;
+import com.example.demo.dao.UserRepository;
 import com.example.demo.dto.MessageDto;
+import com.example.demo.dto.UserDto;
 import com.example.demo.entities.Message;
+import com.example.demo.entities.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.NameTokenizers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,42 +26,83 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class MessageService {
-    @Autowired
-    private MessageRepository messageRepository;
+
+    private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final MapperUtil modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public MessageService(MessageRepository messageRepository, UserRepository userRepository, MapperUtil modelMapper){
+        this.messageRepository = messageRepository;
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+    }
 
-    private MessageDto convertToMessageDto(Message message) {
+
+
+    /*@Autowired
+    private MessageDtoConverter messageDtoConverter;*/
+
+    /*private MessageDto convertToMessageDto(Message message) {
         return modelMapper.map(message, MessageDto.class);
+    }*/
+
+    private MessageDto convertMessageToDto(Message message){
+        MessageDto messageDto = new MessageDto();
+        messageDto.setId(message.getId());
+        messageDto.setDescription(message.getDescription());
+        messageDto.setAssignee(message.getAssignee().getId());
+        messageDto.setReporter(message.getReporter().getId());
+        messageDto.setCreated(message.getCreated());
+        messageDto.setDeleted(message.getDeleted());
+        messageDto.setStatus(message.getStatus());
+
+        return messageDto;
     }
 
     public MessageDto create(MessageDto messageDto){
         log.info("Saving message");
         log.debug("Saving message {}", messageDto.toString());
-        Message message = modelMapper.map(messageDto, Message.class);
+
+        Optional<User> assignee = userRepository.findById(messageDto.getAssignee());
+        Optional<User> reporter = userRepository.findById(messageDto.getReporter());
+
+        Message message = new Message();
+        message.setId(messageDto.getId());
+        message.setDescription(messageDto.getDescription());
+        message.setAssignee(assignee.get());
+        message.setReporter(reporter.get());
+        message.setCreated(messageDto.getCreated());
+        message.setDeleted(messageDto.getDeleted());
+        message.setStatus(messageDto.getStatus());
+
         message = messageRepository.save(message);
-        MessageDto saved = convertToMessageDto(message);
+        MessageDto saved = modelMapper.messageToDto(message);
 
         log.info("Message saved");
         log.debug("Message saved {}", saved.toString());
         return saved;
     }
 
+
+
     public MessageDto update(MessageDto messageDto){
         log.info("updating message");
         log.debug("Updating message {}", messageDto.toString());
-        Message message = messageRepository.findById(messageDto.getId()).orElse(new Message());
+        Message message = new Message();
+
+        Optional<User> assignee = userRepository.findById(messageDto.getAssignee());
+        Optional<User> reporter = userRepository.findById(messageDto.getReporter());
 
         message.setDescription(messageDto.getDescription());
-        message.setAssignee(messageDto.getAssignee());
-        message.setReporter(messageDto.getReporter());
+        message.setAssignee(assignee.get());
+        message.setReporter(reporter.get());
         message.setCreated(messageDto.getCreated());
         message.setDeleted(messageDto.getDeleted());
-        message.setStatus(message.getStatus());
+        message.setStatus(messageDto.getStatus());
 
         message = messageRepository.save(message);
-        MessageDto updated = convertToMessageDto(message);
+        MessageDto updated = convertMessageToDto(message);
 
         log.info("Message updated");
         log.debug("Message updated {}", updated.toString());
@@ -60,9 +110,12 @@ public class MessageService {
     }
 
     public void removeById(UUID id){
-        if (!messageRepository.existsById(id)) {
-            throw new EntityExistsException("Message with id:'" + id + "' doesn't exists");
+        Optional<Message> message = messageRepository.findById(id);
+
+        if (!messageRepository.existsById(id)){
+            message.orElseThrow();
         }
+
         messageRepository.deleteById(id);
     }
 
@@ -72,8 +125,8 @@ public class MessageService {
         List<MessageDto> messageDtos = new ArrayList<>();
         List<Message> messages = messageRepository.findAll();
 
-        for (Message m: messages) {
-            messageDtos.add(convertToMessageDto(m));
+        for (Message m:messages) {
+            messageDtos.add(convertMessageToDto(m));
         }
 
         log.info("all messages received");
@@ -85,9 +138,10 @@ public class MessageService {
         log.info("getting message by id");
         log.debug("getting message by id {}", id.toString());
         Optional<Message> message = messageRepository.findById(id);
+        message.orElseThrow();
 
         log.info("message received");
-        log.debug("message received {}");
-        return convertToMessageDto(message.get());
+        log.debug("message received {}", message);
+        return convertMessageToDto(message.get());
     }
 }

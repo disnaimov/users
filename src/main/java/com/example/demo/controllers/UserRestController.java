@@ -23,7 +23,6 @@ public class UserRestController {
         this.userService = userService;
     }
 
-    //private static final Logger LOGGER = LoggerFactory.getLogger(UserRestController.class);
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<UserResponseDto> create(@RequestBody UserDto user) {
         List<UserDto> userDtos = new ArrayList<>();
@@ -31,6 +30,7 @@ public class UserRestController {
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setStatusCode(HttpStatus.CREATED.value());
         userResponseDto.setContent(userDtos);
+
         return new ResponseEntity<>(userResponseDto, CREATED);
     }
 
@@ -53,15 +53,17 @@ public class UserRestController {
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setStatusCode(OK.value());
         userResponseDto.setContent(userDtos);
+
         return new ResponseEntity<>(userResponseDto, OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<UserResponseDto> getById(@PathVariable("id") UUID id) {
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setStatusCode(OK.value());
         List<UserDto> userDtos = new ArrayList<>();
         userDtos.add(userService.getById(id));
+
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setStatusCode(OK.value());
         userResponseDto.setContent(userDtos);
 
         return new ResponseEntity<>(userResponseDto, OK);

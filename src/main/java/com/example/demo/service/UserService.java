@@ -20,18 +20,24 @@ public class UserService {
 
     //error code: USER_NOT_FOUND
     //content: null
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public UserService(UserRepository userRepository, ModelMapper modelMapper){
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+    }
+
 
     public UserDto create(UserDto userDto) {
         log.info("Saving user");
         log.debug("Saving user {}", userDto.toString());
         User user = modelMapper.map(userDto, User.class);
         user = userRepository.save(user);
-        UserDto saved = convertToUserInfo(user);
+        UserDto saved = convertToUserDto(user);
 
         log.info("User saved");
         log.debug("User saved {}", saved.toString());
@@ -50,7 +56,7 @@ public class UserService {
         user.setPassword(userDto.getPassword());
 
         user = userRepository.save(user);
-        UserDto updated = convertToUserInfo(user);
+        UserDto updated = convertToUserDto(user);
 
         log.info("User updated");
         log.debug("User updated {}", updated.toString());
@@ -74,7 +80,7 @@ public class UserService {
         List<UserDto> userDtos = new ArrayList<>();
         List<User> users = userRepository.findAll();
         for (User u: users) {
-           userDtos.add(convertToUserInfo(u));
+           userDtos.add(convertToUserDto(u));
         }
 
         log.info("all users received");
@@ -82,7 +88,7 @@ public class UserService {
         return userDtos;
     }
 
-    private UserDto convertToUserInfo(User user) {
+    private UserDto convertToUserDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }
 
@@ -96,6 +102,6 @@ public class UserService {
 
         log.info("user received");
         log.debug("user received {}", user);
-        return convertToUserInfo(user.get());
+        return convertToUserDto(user.get());
     }
 }

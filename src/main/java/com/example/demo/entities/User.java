@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = "users")
@@ -26,4 +27,10 @@ public class User implements Serializable {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "assignee")
+    private List<Message> assigneesMessages;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reporter")
+    private List<Message> reportersMessages;
 }

@@ -21,7 +21,7 @@ public class UserNotFoundExceptionHandler extends ResponseEntityExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     protected ResponseEntity<Object> handleEntityNotFoundException(RuntimeException ex, WebRequest request){
-        AwesomeException awesomeException = new AwesomeException("USER_NOT_FOUND", ex.getMessage());
+        AwesomeException awesomeException = new AwesomeException("CONTENT_NOT_FOUND", ex.getMessage());
         return new ResponseEntity<>(awesomeException, HttpStatus.NOT_FOUND);
     }
 
