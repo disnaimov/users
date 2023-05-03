@@ -85,4 +85,24 @@ public class MessageRestController {
 
         return new ResponseEntity<>(messageResponseDto, OK);
     }
+
+    @RequestMapping(value = "/myMessages/{id}", method = RequestMethod.GET)
+    public ResponseEntity<MessageResponseDto> getAllMyMessages(@PathVariable("id") UUID id){
+
+        MessageResponseDto messageResponseDto = new MessageResponseDto();
+        messageResponseDto.setStatusCode(OK.value());
+        messageResponseDto.setContent(messageService.getAllMyMessages(id));
+
+        return new ResponseEntity<>(messageResponseDto, OK);
+    }
+
+    @RequestMapping(value = "/toMeMessages/{id}", method = RequestMethod.GET)
+    public ResponseEntity<MessageResponseDto> getAllToMeMessages(@PathVariable("id") UUID id){
+
+        MessageResponseDto messageResponseDto = new MessageResponseDto();
+        messageResponseDto.setStatusCode(OK.value());
+        messageResponseDto.setContent(messageService.getAllToMeMessages(id));
+
+        return new ResponseEntity<>(messageResponseDto, OK);
+    }
 }

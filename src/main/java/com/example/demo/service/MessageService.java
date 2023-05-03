@@ -22,7 +22,6 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    //private final MessageMapper mapper;
     private final ModelMapper mapper;
 
 
@@ -54,12 +53,6 @@ public class MessageService {
         message = messageRepository.save(message);
 
         MessageDto saved = mapper.map(message, MessageDto.class);
-
-        /*UUID assigneeId = assignee.get().getId();
-        UUID reporterId = reporter.get().getId();
-
-        saved.setAssignee(assigneeId);
-        saved.setReporter(reporterId);*/
 
         log.info("Message saved");
         log.debug("Message saved {}", saved.toString());
@@ -112,12 +105,7 @@ public class MessageService {
         MessageDto messageDto;
 
         for (Message m : messages) {
-            UUID assignee = m.getAssignee().getId();
-            UUID reporter = m.getReporter().getId();
             messageDto = mapper.map(m, MessageDto.class);
-            messageDto.setAssignee(assignee);
-            messageDto.setReporter(reporter);
-
             messageDtos.add(messageDto);
         }
 
@@ -132,15 +120,39 @@ public class MessageService {
         Optional<Message> message = messageRepository.findById(id);
         message.orElseThrow();
 
-        UUID assignee = message.get().getAssignee().getId();
-        UUID reporter = message.get().getReporter().getId();
-
         log.info("message received");
         log.debug("message received {}", message);
         MessageDto messageDto = mapper.map(message.get(), MessageDto.class);
-        messageDto.setAssignee(assignee);
-        messageDto.setReporter(reporter);
 
         return messageDto;
+    }
+
+    public List<MessageDto> getAllMyMessages(UUID id){
+
+        userRepository.findById(id).orElseThrow();
+
+        List<MessageDto> myMessageDtos = new ArrayList<>();
+        List<Message> messages = messageRepository.findAll();
+
+        for (Message m: messages){
+            if (id == m.getAssignee().getId()){
+                myMessageDtos.add(mapper.map(m, MessageDto.class));
+            }
+        }
+        return myMessageDtos;
+    }
+
+    public List<MessageDto> getAllToMeMessages(UUID id){
+        userRepository.findById(id).orElseThrow();
+
+        List<MessageDto> toMeMessageDtos = new ArrayList<>();
+        List<Message> messages = messageRepository.findAll();
+
+        for (Message m: messages) {
+            if (id == m.getReporter().getId()){
+                toMeMessageDtos.add(mapper.map(m, MessageDto.class));
+            }
+        }
+        return toMeMessageDtos;
     }
 }

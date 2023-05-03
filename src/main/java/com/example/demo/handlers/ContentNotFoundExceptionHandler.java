@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 
 @ControllerAdvice
-public class UserNotFoundExceptionHandler extends ResponseEntityExceptionHandler {
+public class ContentNotFoundExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

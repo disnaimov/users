@@ -1,8 +1,9 @@
 package com.example.demo.service;
 
+
+import com.example.demo.dao.UserRepository;
 import com.example.demo.dto.UserDto;
 import com.example.demo.entities.User;
-import com.example.demo.dao.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class UserService {
         log.info("updating user");
         log.debug("Updating user {}", userDto.toString());
         User user = userRepository.findById(userDto.getId())
-                .orElseThrow(/*UserNotFoundException :: new*/);
+                .orElseThrow();
 
         user.setFirstname(userDto.getFirstname());
         user.setLastname(userDto.getLastname());
@@ -97,7 +98,7 @@ public class UserService {
         log.info("getting user by id");
         log.debug("getting user by id {}", id.toString());
         Optional<User> user = userRepository.findById(id);
-        user.orElseThrow(/*UserNotFoundException:: new*/);
+        user.orElseThrow();
 
         log.info("user received");
         log.debug("user received {}", user);
