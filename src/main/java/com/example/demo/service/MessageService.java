@@ -1,14 +1,14 @@
 package com.example.demo.service;
 
 
-import com.example.demo.config.MapperUtil;
-import com.example.demo.config.MessageMapper;
+import com.example.demo.config.MapperConfig;
 import com.example.demo.dao.MessageRepository;
 import com.example.demo.dao.UserRepository;
 import com.example.demo.dto.MessageDto;
 import com.example.demo.entities.Message;
 import com.example.demo.entities.User;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +23,10 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    private final MessageMapper mapper;
+    private final ModelMapper mapper;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository, UserRepository userRepository, MapperUtil modelMapper,MessageMapper mapper){
+    public MessageService(MessageRepository messageRepository, UserRepository userRepository, MapperConfig modelMapper, ModelMapper mapper){
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.mapper = mapper;
@@ -50,7 +50,7 @@ public class MessageService {
 
         message = messageRepository.save(message);
 
-        MessageDto saved = mapper.messageToDto(message);
+        MessageDto saved = mapper.map(message, MessageDto.class);
 
         UUID assigneeId = assignee.get().getId();
         UUID reporterId = reporter.get().getId();
@@ -81,7 +81,7 @@ public class MessageService {
         message.setStatus(messageDto.getStatus());
 
         message = messageRepository.save(message);
-        MessageDto updated = mapper.messageToDto(message);
+        MessageDto updated = mapper.map(message, MessageDto.class);
 
         log.info("Message updated");
         log.debug("Message updated {}", updated.toString());
@@ -112,7 +112,7 @@ public class MessageService {
         for (Message m:messages) {
             UUID assignee = m.getAssignee().getId();
             UUID reporter = m.getReporter().getId();
-            messageDto = mapper.messageToDto(m);
+            messageDto = mapper.map(m, MessageDto.class);
             messageDto.setAssignee(assignee);
             messageDto.setReporter(reporter);
 
@@ -135,7 +135,7 @@ public class MessageService {
 
         log.info("message received");
         log.debug("message received {}", message);
-        MessageDto messageDto = mapper.messageToDto(message.get());
+        MessageDto messageDto = mapper.map(message.get(), MessageDto.class);
         messageDto.setAssignee(assignee);
         messageDto.setReporter(reporter);
 
