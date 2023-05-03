@@ -1,9 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.entities.User;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

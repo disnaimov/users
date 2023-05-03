@@ -15,12 +15,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-//@Transactional
 public class UserService {
-
-    //error code: USER_NOT_FOUND
-    //content: null
-
     private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
@@ -66,11 +61,15 @@ public class UserService {
 
     public void removeById(UUID id) {
         Optional<User> user = userRepository.findById(id);
+        log.info("removal user by id");
+        log.debug("removal user by id {}", id);
 
         if (!userRepository.existsById(id)) {
-            user.orElseThrow(/*UserNotFoundException :: new*/);
+            user.orElseThrow();
         }
 
+        log.info("user removed");
+        log.debug("user removed {}", user);
         userRepository.deleteById(id);
     }
 

@@ -2,12 +2,8 @@ package com.example.demo.controllers;
 
 import com.example.demo.dto.MessageDto;
 import com.example.demo.dto.MessageResponseDto;
-import com.example.demo.entities.Message;
-import com.example.demo.dao.MessageRepository;
 import com.example.demo.service.MessageService;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
