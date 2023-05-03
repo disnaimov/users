@@ -31,7 +31,7 @@ public class MessageRestController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<MessageResponseDto> create(@RequestBody MessageDto message) {
         List<MessageDto> messageDtos = new ArrayList<>();
-        messageDtos.add(messageService.create(message));
+        messageDtos.add(messageService.createMessage(message));
         MessageResponseDto messageResponseDto = new MessageResponseDto();
 
         messageResponseDto.setStatusCode(CREATED.value());
@@ -112,4 +112,16 @@ public class MessageRestController {
 
         return new ResponseEntity<>(messageResponseDto, OK);
     }
+
+    /*@RequestMapping(value = "/my/discussions", method = RequestMethod.GET)
+    public ResponseEntity<DiscussionResponseDto> getMyDiscussion(@RequestBody UUID id){
+
+
+        DiscussionResponseDto dto = new DiscussionResponseDto();
+        dto.setStatusCode(OK.value());
+        dto.setContent(messageService.createDiscusion(id));
+
+        return new ResponseEntity<>(dto, OK);
+    }*/
+
 }

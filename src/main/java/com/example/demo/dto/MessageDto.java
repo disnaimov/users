@@ -20,8 +20,5 @@ public class MessageDto implements Serializable {
     private long created;
     private long deleted;
     private String status;
-
-    /*public MessageDto(UserDto assignee, UserDto reporter){
-        this.assignee = Integer.parseInt(assignee);
-    }*/
+    private UUID parent;
 }

@@ -15,7 +15,7 @@ public class MapperConfig {
         TypeMap<Message, MessageDto> typemap = mapper.createTypeMap(Message.class, MessageDto.class);
         typemap.addMapping(s->s.getAssignee().getId(), MessageDto::setAssignee);
         typemap.addMapping(s->s.getReporter().getId(), MessageDto::setReporter);
-
+        typemap.addMapping(s->s.getParent().getId(), MessageDto::setParent);
         return mapper;
     }
 

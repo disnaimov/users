@@ -38,4 +38,8 @@ public class Message implements Serializable {
     @Column(name = "status")
     private String status;
 
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Message parent;
+
 }

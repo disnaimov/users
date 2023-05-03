@@ -11,10 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -34,21 +31,29 @@ public class MessageService {
         this.mapper = mapper;
     }
 
-    public MessageDto create(MessageDto messageDto) {
+
+      public MessageDto createMessage(MessageDto messageDto) {
         log.info("Saving message");
         log.debug("Saving message {}", messageDto.toString());
 
         Optional<User> assignee = userRepository.findById(messageDto.getAssignee());
         Optional<User> reporter = userRepository.findById(messageDto.getReporter());
 
-        Message message = new Message();
-        message.setId(messageDto.getId());
-        message.setDescription(messageDto.getDescription());
-        message.setAssignee(assignee.get());
-        message.setReporter(reporter.get());
-        message.setCreated(messageDto.getCreated());
-        message.setDeleted(messageDto.getDeleted());
-        message.setStatus(messageDto.getStatus());
+          Message message = new Message();
+          message.setId(messageDto.getId());
+          message.setDescription(messageDto.getDescription());
+          message.setAssignee(assignee.get());
+          message.setReporter(reporter.get());
+          message.setCreated(messageDto.getCreated());
+          message.setDeleted(messageDto.getDeleted());
+          message.setStatus(messageDto.getStatus());
+
+        UUID parentId = messageDto.getParent();
+
+        if (messageRepository.findById(parentId).isPresent()) {
+              Optional<Message> parent = messageRepository.findById(parentId);
+              message.setParent(parent.get());
+        }
 
         message = messageRepository.save(message);
 
@@ -58,7 +63,6 @@ public class MessageService {
         log.debug("Message saved {}", saved.toString());
         return saved;
     }
-
 
     public MessageDto update(MessageDto messageDto) {
         log.info("updating message");
