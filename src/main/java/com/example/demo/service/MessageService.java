@@ -127,32 +127,39 @@ public class MessageService {
         return messageDto;
     }
 
-    public List<MessageDto> getAllMyMessages(UUID id){
+    public List<MessageDto> getMyAssignedMessages(UUID id){
 
-        userRepository.findById(id).orElseThrow();
+        log.info("getting all assigned messages by id");
+        log.debug("getting assigned messages by id {}", id.toString());
+        Optional<User> assignee = userRepository.findById(id);
 
-        List<MessageDto> myMessageDtos = new ArrayList<>();
-        List<Message> messages = messageRepository.findAll();
+        List<MessageDto> assignedMessageDtos = new ArrayList<>();
+        List<Message> messages = messageRepository.findByAssignee(assignee);
 
         for (Message m: messages){
-            if (id == m.getAssignee().getId()){
-                myMessageDtos.add(mapper.map(m, MessageDto.class));
-            }
+                assignedMessageDtos.add(mapper.map(m, MessageDto.class));
         }
-        return myMessageDtos;
+
+        log.info("all messages received");
+        log.debug("all messages received {}", assignedMessageDtos);
+        return assignedMessageDtos;
     }
 
-    public List<MessageDto> getAllToMeMessages(UUID id){
-        userRepository.findById(id).orElseThrow();
+    public List<MessageDto> getMyReportedMessages(UUID id){
 
-        List<MessageDto> toMeMessageDtos = new ArrayList<>();
-        List<Message> messages = messageRepository.findAll();
+        log.info("getting all reported messages by id");
+        log.debug("getting reported messages by id {}", id.toString());
+        Optional<User> reporter = userRepository.findById(id);
+
+        List<MessageDto> reportedMessageDtos = new ArrayList<>();
+        List<Message> messages = messageRepository.findByReporter(reporter);
 
         for (Message m: messages) {
-            if (id == m.getReporter().getId()){
-                toMeMessageDtos.add(mapper.map(m, MessageDto.class));
-            }
+                reportedMessageDtos.add(mapper.map(m, MessageDto.class));
         }
-        return toMeMessageDtos;
+
+        log.info("all messages received");
+        log.debug("all messages received {}", reportedMessageDtos);
+        return reportedMessageDtos;
     }
 }

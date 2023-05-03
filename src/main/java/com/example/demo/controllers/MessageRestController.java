@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dao.UserRepository;
 import com.example.demo.dto.MessageDto;
 import com.example.demo.dto.MessageResponseDto;
 import com.example.demo.service.MessageService;
@@ -19,10 +20,12 @@ import static org.springframework.http.HttpStatus.OK;
 public class MessageRestController {
 
     private final MessageService messageService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public MessageRestController(MessageService messageService) {
+    public MessageRestController(MessageService messageService, UserRepository userRepository) {
         this.messageService = messageService;
+        this.userRepository = userRepository;
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -87,21 +90,25 @@ public class MessageRestController {
     }
 
     @RequestMapping(value = "/my", method = RequestMethod.GET)
-    public ResponseEntity<MessageResponseDto> getAllMyMessages(@RequestBody UUID id){
+    public ResponseEntity<MessageResponseDto> getAllMyAssignedMessages(@RequestBody UUID id){
+
+        userRepository.findById(id).orElseThrow();
 
         MessageResponseDto messageResponseDto = new MessageResponseDto();
         messageResponseDto.setStatusCode(OK.value());
-        messageResponseDto.setContent(messageService.getAllMyMessages(id));
+        messageResponseDto.setContent(messageService.getMyAssignedMessages(id));
 
         return new ResponseEntity<>(messageResponseDto, OK);
     }
 
     @RequestMapping(value = "/my/reported", method = RequestMethod.GET)
-    public ResponseEntity<MessageResponseDto> getAllToMeMessages(@RequestBody UUID id){
+    public ResponseEntity<MessageResponseDto> getAllMyReportedMessages(@RequestBody UUID id){
+
+        userRepository.findById(id).orElseThrow();
 
         MessageResponseDto messageResponseDto = new MessageResponseDto();
         messageResponseDto.setStatusCode(OK.value());
-        messageResponseDto.setContent(messageService.getAllToMeMessages(id));
+        messageResponseDto.setContent(messageService.getMyReportedMessages(id));
 
         return new ResponseEntity<>(messageResponseDto, OK);
     }
